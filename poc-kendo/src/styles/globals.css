@@ -14,3 +14,8 @@ a {
 * {
   box-sizing: border-box;
 }
+.kendo-ui-grid
+{
+  height: 600px;
+  overflow: scroll;
+}
