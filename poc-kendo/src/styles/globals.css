@@ -16,6 +16,37 @@ a {
 }
 .kendo-ui-grid
 {
-  height: 600px;
-  overflow: scroll;
+  height: calc(100% - 65px);
+  overflow: auto;
+}
+
+
+.headerbar
+{
+  height: 50px;
+  background-color: darkorange;
+}
+.footerbar
+{
+  height: 50px;
+  background-color: #e6e6e6;
+}
+
+.maincontainer
+{
+  display: flex;
+  flex-direction: row;
+}
+.leftbar
+{
+  width: 90px;
+  background: #18188e;
+  height: calc(100vh - 66px);
+  
+}
+.rightbar
+{
+  flex: 1;
+  height: calc(100vh - 67px);
+  
 }

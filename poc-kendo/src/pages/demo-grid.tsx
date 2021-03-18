@@ -5,6 +5,7 @@ const DemoGrid = () => {
    
     return (
         <div className="kendo-ui-grid">
+            <h3>Personnel List</h3>
             <Grid  data={data}>
                 <Column width="50" field="ProductID" title="ID" filterable={false} editable={false}/>
                 <Column field="ProductName" title="Name" />
