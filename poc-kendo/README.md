@@ -1,6 +1,15 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+ # ... install modules before activating the license
+    - name: Install NPM modules
+      run: npm install
+
+    - name: Activate Kendo UI License
+      # Set working directory if the application is not in the repository root folder:
+      # working-directory: 'ClientApp'
+      run: npx kendo-ui-license activate
+      env:
+        KENDO_UI_LICENSE: ${{ secrets.KENDO_UI_LICENSE }}
 
 First, run the development server:
 
