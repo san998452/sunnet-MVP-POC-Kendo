@@ -1,20 +1,18 @@
 import { gql, useQuery } from "@apollo/client";
 import { Grid, GridColumn as Column } from "@progress/kendo-react-grid";
-// import data from '../../data/products.json'
 const GET_PERSON = gql`
-    {
-      listPerson {
-        personId
-        empId
-        firstName
-        lastName
-        title
-      }
+  {
+    listPerson {
+      personId
+      empId
+      firstName
+      lastName
+      title
     }
-  `;
+  }
+`;
 
 const DemoGrid = () => {
-  
   const { loading, error, data } = useQuery(GET_PERSON);
 
   if (loading) return "Loading...";
@@ -32,9 +30,9 @@ const DemoGrid = () => {
           editable={false}
         />
         <Column field="firstName" title="First Name" />
-                <Column field="lastName" title="Last Name"  />
-                <Column field="title" title="Title"/>
-          </Grid>
+        <Column field="lastName" title="Last Name" />
+        <Column field="title" title="Title" />
+      </Grid>
     </div>
   );
 };

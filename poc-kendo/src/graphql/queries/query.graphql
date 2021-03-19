@@ -1,28 +1,27 @@
-query allUsers {
-  allUsers {
-    id
-    label
-    name
-    role
-  }
-}
+# query allUsers {
+#   allUsers {
+#     id
+#     label
+#     name
+#     role
+#   }
+# }
 
-query allMenuItems {
-  allMenuItems {
-    icon
-    path
-    title
-    isAccessible
-  }
-}
+# query allMenuItems {
+#   allMenuItems {
+#     icon
+#     path
+#     title
+#     isAccessible
+#   }
+# }
 
-
-query listPerson{
-    listPerson{
-        personId, 
-        empId,
-        firstName,
-        lastName,
+query listPerson {
+  listPerson {
+    personId
+    empId
+    firstName
+    lastName
     workPhone
     homePhone
     email
@@ -42,77 +41,75 @@ query listPerson{
     limited
     enableFlag
     authorizedPersonnel
-    }
-}
-
-query allItemLists {
-  allItemLists{
-    label
-    name
-    menuItem
-    url
-    itemList
   }
 }
 
-query PersonList($id:ID!){
-    PersonList(id:$id){
-    personId
-    empId
-    firstName
-    lastName
-    workPhone
-    homePhone
-    email
-    location
-    cellPhone
-    faxPhone
-    ext
-    title
-    pagerPhone
-    pagerNumber
-    pagerNumberPin
-    pagerNational
-    supervisor
-    radioTruck
-    memberCode
-    groupName
-    limited
-    fullName
-    enabled
-    enableFlag
-    id
-    }
-}
+# query allItemLists {
+#   allItemLists {
+#     label
+#     name
+#     menuItem
+#     url
+#     itemList
+#   }
+# }
 
-query  allPersonLists {
-  allPersonLists {
-    personId
-    empId
-    firstName
-    lastName
-    workPhone
-    homePhone
-    email
-    location
-    cellPhone
-    faxPhone
-    ext
-    title
-    pagerPhone
-    pagerNumber
-    pagerNumberPin
-    pagerNational
-    supervisor
-    radioTruck
-    memberCode
-    groupName
-    limited
-    fullName
-    enabled
-    enableFlag
-    id
-  }
-}
+# query PersonList($id: ID!) {
+#   PersonList(id: $id) {
+#     personId
+#     empId
+#     firstName
+#     lastName
+#     workPhone
+#     homePhone
+#     email
+#     location
+#     cellPhone
+#     faxPhone
+#     ext
+#     title
+#     pagerPhone
+#     pagerNumber
+#     pagerNumberPin
+#     pagerNational
+#     supervisor
+#     radioTruck
+#     memberCode
+#     groupName
+#     limited
+#     fullName
+#     enabled
+#     enableFlag
+#     id
+#   }
+# }
 
-
+# query allPersonLists {
+#   allPersonLists {
+#     personId
+#     empId
+#     firstName
+#     lastName
+#     workPhone
+#     homePhone
+#     email
+#     location
+#     cellPhone
+#     faxPhone
+#     ext
+#     title
+#     pagerPhone
+#     pagerNumber
+#     pagerNumberPin
+#     pagerNational
+#     supervisor
+#     radioTruck
+#     memberCode
+#     groupName
+#     limited
+#     fullName
+#     enabled
+#     enableFlag
+#     id
+#   }
+# }

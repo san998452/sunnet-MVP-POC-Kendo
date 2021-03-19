@@ -5,15 +5,14 @@ import Footer from './footer';
 const Index = () => {
   return(
     <>
-    <Header />
-    <div className="maincontainer">      
-    <Leftbar />
-    <div className="rightbar">
-      <DemoGrid />
-      <Footer />
+      <Header />
+      <div className="maincontainer">      
+        <Leftbar />
+        <div className="rightbar">
+          <DemoGrid />
+          <Footer />
+        </div>
       </div>
-    
-    </div>
     </>
   )
 }
