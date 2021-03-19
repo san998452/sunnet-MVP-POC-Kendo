@@ -1,25 +1,42 @@
-import { Grid, GridColumn as Column } from '@progress/kendo-react-grid';
-import data from '../../data/products.json'
+import { gql, useQuery } from "@apollo/client";
+import { Grid, GridColumn as Column } from "@progress/kendo-react-grid";
+// import data from '../../data/products.json'
+const GET_PERSON = gql`
+    {
+      listPerson {
+        personId
+        empId
+        firstName
+        lastName
+        title
+      }
+    }
+  `;
 
 const DemoGrid = () => {
-   
-    return (
-        <div className="kendo-ui-grid">
-            <h3>Personnel List</h3>
-            <Grid  data={data}>
-                <Column width="50" field="ProductID" title="ID" filterable={false} editable={false}/>
-                <Column field="ProductName" title="Name" />
-                <Column field="SupplierID" title="Supplier ID" filter='numeric' editor='numeric' />
-                <Column field="CategoryID" title="Category ID" filter='numeric'  editor='numeric' />
-                <Column field="QuantityPerUnit" title="Quantity Per Unit" filter='numeric'  editor='numeric' />
-                <Column field="UnitPrice" title="Unit Price" filter='numeric'  editor='numeric' />
-                <Column field="UnitsInStock" title="In stock" filter='numeric'  editor='numeric' />
-                <Column field="UnitsInStock" title="In stock" filter='numeric'  editor='numeric' />
-                <Column field="UnitsInStock" title="In stock" filter='numeric'  editor='numeric' />
+  
+  const { loading, error, data } = useQuery(GET_PERSON);
 
-            </Grid>
-        </div>
-    )
-}
+  if (loading) return "Loading...";
+  if (error) return `Error! ${error.message}`;
 
-export default DemoGrid
+  return (
+    <div className="kendo-ui-grid">
+      <h3>Personnel List</h3>
+      <Grid data={data.listPerson}>
+        <Column
+          width="150"
+          field="empId"
+          title="ID"
+          filterable={false}
+          editable={false}
+        />
+        <Column field="firstName" title="First Name" />
+                <Column field="lastName" title="Last Name"  />
+                <Column field="title" title="Title"/>
+          </Grid>
+    </div>
+  );
+};
+
+export default DemoGrid;

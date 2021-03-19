@@ -1,0 +1,27 @@
+type User {
+    id: ID!
+    label: String!
+    name: String!
+    role: String!
+}
+
+type Query {
+  allUsers: [User]
+}
+
+# type Query {
+#   allUsers(id: ID!): User
+# }
+
+type MenuItem {
+  icon: String!
+  path: String!
+  title: String!
+  isAccessible: [String]!
+}
+
+type Query {
+  allMenuItems: [MenuItem]
+}
+
+

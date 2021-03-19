@@ -1,0 +1,55 @@
+mutation CreatePerson($personId:Int!,$id:ID!,$empId:String!,$firstName:String!,$lastName:String!,$homePhone:String!,$cellPhone:String!,$fullName:String!,$enabled:Boolean!,$enableFlag:String!,$memberCode:String,$workPhone:String,$faxPhone:String,$ext:String,$email:String,$location:String,$pagerNational:String,$pagerNumber:String,$pagerNumberPin:String,$pagerPhone:String,$title:String,$radioTruck:String,$groupName:String){
+  createPersonList(personId:$personId,id:$id,empId:$empId,firstName:$firstName,lastName:$lastName,homePhone:$homePhone,cellPhone:$cellPhone,fullName:$fullName,enabled:$enabled,enableFlag:$enableFlag,memberCode:$memberCode,workPhone:$workPhone,faxPhone:$faxPhone,ext:$ext,email:$email,location:$location,pagerNational:$pagerNational,pagerNumber:$pagerNumber,pagerNumberPin:$pagerNumberPin,pagerPhone:$pagerPhone,title:$title,radioTruck:$radioTruck,groupName:$groupName){
+    personId
+    empId
+    email
+    firstName
+    lastName
+    homePhone
+    cellPhone
+    fullName
+   memberCode
+   workPhone
+   faxPhone
+   ext
+   location
+   pagerNational
+   pagerNumber
+   pagerNumberPin
+   pagerPhone
+   title
+   radioTruck
+   groupName
+
+  }
+}
+
+mutation updatePersonList($personId:Int,$id:ID!,$empId:String,$firstName:String,$lastName:String,$homePhone:String,$cellPhone:String,$fullName:String,$enabled:Boolean,$enableFlag:String,$memberCode:String,$workPhone:String,$faxPhone:String,$ext:String,$email:String,$location:String,$pagerNational:String,$pagerNumber:String,$pagerNumberPin:String,$pagerPhone:String,$title:String,$radioTruck:String,$groupName:String){
+  updatePersonList(personId:$personId,id:$id,empId:$empId,firstName:$firstName,lastName:$lastName,homePhone:$homePhone,cellPhone:$cellPhone,fullName:$fullName,enabled:$enabled,enableFlag:$enableFlag,memberCode:$memberCode,workPhone:$workPhone,faxPhone:$faxPhone,ext:$ext,email:$email,location:$location,pagerNational:$pagerNational,pagerNumber:$pagerNumber,pagerNumberPin:$pagerNumberPin,pagerPhone:$pagerPhone,title:$title,radioTruck:$radioTruck,groupName:$groupName){
+    personId
+    empId
+    email
+    firstName
+    lastName
+    homePhone
+    cellPhone
+    fullName
+   memberCode
+   workPhone
+   faxPhone
+   ext
+   location
+   pagerNational
+   pagerNumber
+   pagerNumberPin
+   pagerPhone
+   title
+   radioTruck
+   groupName
+
+  }
+}
+
+mutation removePersonList($id:ID!){
+   removePersonList(id:$id)
+}
