@@ -21,9 +21,10 @@ const DemoGrid = () => {
   return (
     <div className="kendo-ui-grid">
       <h3>Personnel List</h3>
-      <Grid data={data.listPerson}>
+      <Grid data={data.listPerson}
+      style={{ height: 'calc(100% - 62px)' }}>
         <Column
-          width="150"
+          width="80"
           field="empId"
           title="ID"
           filterable={false}
