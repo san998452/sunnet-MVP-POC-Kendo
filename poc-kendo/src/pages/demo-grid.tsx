@@ -39,7 +39,8 @@ const DemoGrid = () => {
   return (
     <div className="kendo-ui-grid">
       <h3>Personnel List</h3>
-      <Grid 
+      <Grid
+        style={{ height: "calc(100% - 62px)" }} 
         data={data.listPerson.slice(skip, take + skip)}
         skip={skip}
         take={take}
@@ -50,11 +51,11 @@ const DemoGrid = () => {
         reorderable 
       >
         <Column
+          width="80px"
           field="empId"
           title="ID"
           filterable={false}
           editable={false}
-          width="80px" 
           minResizableWidth={60}
         />
         <Column field="firstName" title="First Name" />
