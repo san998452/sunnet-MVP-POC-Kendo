@@ -39,8 +39,7 @@ query listPerson {
     memberCode
     groupName
     limited
-    enableFlag
-    authorizedPersonnel
+    enabledFlag
   }
 }
 
