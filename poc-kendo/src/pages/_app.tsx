@@ -1,7 +1,8 @@
 // Import configuration from the theme builder
 import '../styles/variables.scss';
 import '@progress/kendo-theme-default/dist/all.scss';
-import '../styles/globals.css';
+import '../styles/sunnet-mvp.css';
+import '../styles/globals.scss';
 import { ApolloClient, InMemoryCache, ApolloProvider, NormalizedCacheObject, createHttpLink, gql } from '@apollo/client';
 const httpLink = createHttpLink({ uri: 'http://192.168.101.174:4000/' })
 
