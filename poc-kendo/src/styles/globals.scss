@@ -64,11 +64,27 @@ a {
 .rightbar
 {
   flex: 1;
-  height: calc(100vh - 50px);
+  //height: calc(100vh);
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
  
 }
 
 .cl-pc-1
 {
   color: #f6f6f6;
+}
+
+// drawer styles
+.drawer
+{
+  &-md
+  {
+    .k-drawer-wrapper
+    {
+      width: 700px !important;
+    }
+    
+  }
 }
