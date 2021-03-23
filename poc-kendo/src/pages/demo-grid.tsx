@@ -6,6 +6,8 @@ import {
   GridDetailRow,
   GridToolbar,
 } from "@progress/kendo-react-grid";
+import { orderBy, filterBy, process } from '@progress/kendo-data-query';
+import { ListPersonDocument } from "../graphql-operations";
 import { ExcelExport } from "@progress/kendo-react-excel-export";
 
 const GET_PERSON = gql`
@@ -29,6 +31,7 @@ const GET_PERSON = gql`
   }
 `;
 
+
 class DetailComponent extends GridDetailRow {
   render() {
     const dataItem = this.props.dataItem;
@@ -41,9 +44,12 @@ class DetailComponent extends GridDetailRow {
 }
 
 const DemoGrid = () => {
-  const { loading, error, data } = useQuery(GET_PERSON);
-  const [skip, setSkip] = useState(0);
-  const [take, setTake] = useState(10);
+  
+  
+  const { loading, error, data } = useQuery(ListPersonDocument);
+  const [sort,setSort] = useState<any>([{ field: 'empId', dir: 'desc' }])
+  const [skip, setSkip] = useState(0)
+  const [take, setTake] = useState(10)
 
   const pageChange = (event) => {
     setSkip(event.page.skip);
@@ -117,3 +123,4 @@ const DemoGrid = () => {
 };
 
 export default DemoGrid;
+
