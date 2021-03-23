@@ -29,7 +29,7 @@ client
   }
     `
   })
-  .then(result => console.log("res--",result));
+  // .then(result => console.log("res--",result));
 
 
 function MyApp({ Component, pageProps }) {
