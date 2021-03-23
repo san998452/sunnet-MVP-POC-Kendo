@@ -1,4 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import Link from 'next/link'
 import { faWarehouse,faListAlt,faUser,faChartLine,faPoll,faTachometerAlt } from '@fortawesome/free-solid-svg-icons'
 const leftbar = () =>
 {
@@ -6,10 +7,12 @@ const leftbar = () =>
         <>
         <nav className="leftbar">
         <div className="logo">
-            <a href="/">
+            <Link href="/">
+                <a>
             <FontAwesomeIcon icon={faWarehouse} size="2x" className="cl-pc-1"/><br />
             Dashboard
            </a>  
+           </Link>
            </div>
             <div className="menu-item">
             <a href="/">
@@ -36,14 +39,22 @@ const leftbar = () =>
            </a>  
            </div>
            <div className="menu-item">
-            <a href="/">
+               
+            {/* <a href="/admin">
+
+            <FontAwesomeIcon icon={faUser} size="2x" className="cl-pc-1"/><br />
+            <h6>Admin</h6>
+           </a>   */}
+           
+        <Link href={"/admin"}>
+            <a>
             <FontAwesomeIcon icon={faUser} size="2x" className="cl-pc-1"/><br />
             Admin
-           </a>  
+            </a>
+           </Link>
            </div>
 
         </nav>
-
         </>
     )
 }
