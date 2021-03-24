@@ -10,6 +10,7 @@ import { orderBy, filterBy, process } from "@progress/kendo-data-query";
 import { ListPersonDocument } from "../graphql-operations";
 import { ExcelExport } from "@progress/kendo-react-excel-export";
 import { GridPDFExport } from "@progress/kendo-react-pdf";
+import { ColumnMenu } from "../components/Admin/ListFilter/columnMenu";
 
 class DetailComponent extends GridDetailRow {
   render() {
@@ -29,7 +30,6 @@ const DemoGrid = () => {
   const [take, setTake] = useState(10);
   const [filter,setFilter] = useState<any>(undefined)
   const [isExporting, setExporting] = useState(false);
-  // const [gridPdfExport, setGridPdfExport] = useState({})
 
   const pageChange = (event) => {
     setSkip(event.page.skip);
@@ -50,53 +50,38 @@ const DemoGrid = () => {
     _export.current.save();
   };
 
-  const pdfExportDone = () => {
-    setExporting(false);
-  };
-
   let _gridPDFExport = React.createRef()
   const exportPDF = () => {
     // Simulate a response from a web request.
     setTimeout(() => {
       if(_gridPDFExport.current) {
-      _gridPDFExport.current.save(data.listPerson, pdfExportDone);
+      // _gridPDFExport.current.save(data.listPerson);
+      _gridPDFExport.current.save();
       }
-    }, 250);
+    }, 500);
     setExporting(true);
   };
 
   const grid = (
     <Grid
-      style={{ height: "calc(100% - 62px)" }}
+      // style={{ height: "calc(100% - 62px)" }}
       data={data.listPerson.slice(skip, take + skip)}
       skip={skip}
       take={take}
       total={data.listPerson.length}
     >
-        {/* <GridToolbar>
-            <button
-              title="Export PDF"
-              className="k-button k-primary"
-              onClick={exportPDF}
-            //   disabled={isExporting}
-            >
-              Export PDF
-            </button>
-          </GridToolbar> */}
       <Column
-        width="80px"
         field="empId"
         title="ID"
         filterable={false}
         editable={false}
-        minResizableWidth={60}
       />
       <Column field="firstName" title="First Name" />
       <Column field="lastName" title="Last Name" />
-      <Column field="title" title="Title" width="200px" />
+      <Column field="title" title="Title" />
       <Column field="workPhone" title="Work Phone" />
       <Column field="homePhone" title="Home Phone" />
-      <Column field="email" title="Email" width="150px" />
+      <Column field="email" title="Email" />
       <Column field="location" title="Location" />
       <Column field="supervisor" title="Supervisor" />
       <Column field="cellPhone" title="Cell Phone" />
@@ -109,10 +94,6 @@ const DemoGrid = () => {
     <div className="kendo-ui-grid">
       <h3>Personnel List</h3>
       <ExcelExport data={data.listPerson} ref={_export}>
-        {/* <GridPDFExport
-        ref={(pdfExport) => (gridPDFExport = pdfExport)}
-        margin="1cm"
-      > */}
         <Grid
           style={{ height: "calc(100% - 62px)" ,width:"80%"}}
           data={filterBy(orderBy(data.listPerson,sort),filter).slice(skip, take + skip)}
@@ -191,10 +172,10 @@ const DemoGrid = () => {
           <Column field="enabledFlag" title="Enabled Flag" width="200px" filter={'boolean'}/>
           <Column field="pagerNational" title="Pager National" width="200px"/>
         </Grid>
-        {/* </GridPDFExport> */}
       </ExcelExport>
       <GridPDFExport
         paperSize="A4"
+        scale={0.5}
         ref={_gridPDFExport}
         margin="1cm"
       >
