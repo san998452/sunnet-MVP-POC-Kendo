@@ -27,9 +27,9 @@ const DemoGrid = () => {
   const [sort, setSort] = useState<any>([{ field: "empId", dir: "desc" }]);
   const [skip, setSkip] = useState(0);
   const [take, setTake] = useState(10);
+  const [filter,setFilter] = useState<any>(undefined)
   const [isExporting, setExporting] = useState(false);
   // const [gridPdfExport, setGridPdfExport] = useState({})
-  
 
   const pageChange = (event) => {
     setSkip(event.page.skip);
@@ -114,8 +114,8 @@ const DemoGrid = () => {
         margin="1cm"
       > */}
         <Grid
-          style={{ height: "calc(100% - 62px)" }}
-          data={data.listPerson.slice(skip, take + skip)}
+          style={{ height: "calc(100% - 62px)" ,width:"80%"}}
+          data={filterBy(orderBy(data.listPerson,sort),filter).slice(skip, take + skip)}
           skip={skip}
           take={take}
           total={data.listPerson.length}
@@ -126,6 +126,32 @@ const DemoGrid = () => {
           expandField="expanded"
           detail={DetailComponent}
           onExpandChange={expandChange}
+          
+        sortable
+        sort={sort}
+        onSortChange={(e) => {
+           setSort(e.sort)
+        }}
+        // data={filterBy(sampleProducts, this.state.filter)}
+        filterable
+        filter={filter}
+        filterOperators={{
+          'text': [
+              { text: 'grid.filterContainsOperator', operator: 'contains' }
+          ],
+          'numeric': [
+              { text: 'grid.filterEqOperator', operator: 'eq' }
+          ],
+          'date': [
+              { text: 'grid.filterEqOperator', operator: 'eq' }
+          ],
+          'boolean': [
+              { text: 'grid.filterEqOperator', operator: 'eq' }
+          ]
+        }}
+        onFilterChange={(e) => {
+                setFilter(e.filter)
+        }}
         >
           <GridToolbar>
             <button
@@ -150,19 +176,20 @@ const DemoGrid = () => {
             title="ID"
             filterable={false}
             editable={false}
+            locked
             minResizableWidth={60}
           />
-          <Column field="firstName" title="First Name" />
-          <Column field="lastName" title="Last Name" />
+          <Column locked field="firstName" width="200px" title="First Name" filter={'text'} columnMenu={ColumnMenu}/>
+          <Column  locked field="lastName" title="Last Name" width="200px" columnMenu={ColumnMenu}/>
           <Column field="title" title="Title" width="200px" />
-          <Column field="workPhone" title="Work Phone" />
-          <Column field="homePhone" title="Home Phone" />
+          <Column field="workPhone" title="Work Phone" width="200px"/>
+          <Column field="homePhone" title="Home Phone" width="200px"/>
           <Column field="email" title="Email" width="150px" />
-          <Column field="location" title="Location" />
-          <Column field="supervisor" title="Supervisor" />
-          <Column field="cellPhone" title="Cell Phone" />
-          <Column field="enabledFlag" title="Enabled Flag" />
-          <Column field="pagerNational" title="Pager National" />
+          <Column field="location" title="Location" width="200px" filter={'numeric'}/>
+          <Column field="supervisor" title="Supervisor" width="200px"/>
+          <Column field="cellPhone" title="Cell Phone" width="200px" />
+          <Column field="enabledFlag" title="Enabled Flag" width="200px" filter={'boolean'}/>
+          <Column field="pagerNational" title="Pager National" width="200px"/>
         </Grid>
         {/* </GridPDFExport> */}
       </ExcelExport>
