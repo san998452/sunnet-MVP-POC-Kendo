@@ -33,10 +33,10 @@ const header = () =>
     return(
         <div className="headerbar">
         I am header
-        <DropDownButton text="User Settings" 
+        {/* <DropDownButton text="User Settings" 
         items={items.map(item=>item.displayName)} primary={true} />
         <ComboBox data={items.map(item=>item.displayName)} onChange={(e)=>console.log(e.target.value)}/>
-        <DropDownList data={items.map(item=>item.displayName)} defaultValue={"NVE Admin"} onChange={(e)=>console.log(e.target.value)}/>
+        <DropDownList data={items.map(item=>item.displayName)} defaultValue={"NVE Admin"} onChange={(e)=>console.log(e.target.value)}/> */}
 
         </div>
     )
