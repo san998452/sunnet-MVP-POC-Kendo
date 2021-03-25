@@ -102,8 +102,9 @@ const DemoGrid = () => {
     <AutoSizer className="autoresizer-tbl">
     {({ height, width }) => {
         console.log(`Height: ${height} | Width: ${width}`);
-        const pageSize = Math.floor((height - 355) / 48);
+        const pageSize = Math.floor((height - 375) / 48);
         console.log(`Page Size: ${pageSize}`);
+        //updating kendo pagesize
         setTake(pageSize);
         return(
 
