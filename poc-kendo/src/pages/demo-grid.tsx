@@ -6,33 +6,13 @@ import {
   GridDetailRow,
   GridToolbar,
 } from "@progress/kendo-react-grid";
-import { orderBy, filterBy, process } from '@progress/kendo-data-query';
+import { orderBy, filterBy, process } from "@progress/kendo-data-query";
 import { ListPersonDocument } from "../graphql-operations";
 import { ExcelExport } from "@progress/kendo-react-excel-export";
 import { ColumnMenu } from "../components/Admin/ListFilter/columnMenu";
-
-const GET_PERSON = gql`
-  {
-    listPerson {
-      personId
-      empId
-      firstName
-      lastName
-      title
-      workPhone
-      homePhone
-      email
-      location
-      supervisor
-      radioTruck
-      pagerNational
-      cellPhone
-      enabledFlag
-    }
-  }
-`;
-
-
+import { CustomColumnMenu } from "../components/Admin/ListFilter/Show_Hide_columns";
+import column from "../components/Admin/ListFilter/column";
+import { info } from "node:console";
 class DetailComponent extends GridDetailRow {
   render() {
     const dataItem = this.props.dataItem;
@@ -45,14 +25,13 @@ class DetailComponent extends GridDetailRow {
 }
 
 const DemoGrid = () => {
-  
-  
   const { loading, error, data } = useQuery(ListPersonDocument);
-  const [sort,setSort] = useState<any>([{ field: 'empId', dir: 'desc' }])
-  const [filter,setFilter] = useState<any>(undefined)
-  const [skip, setSkip] = useState(0)
-  const [take, setTake] = useState(10)
-
+  const [sort, setSort] = useState<any>([{ field: "empId", dir: "desc" }]);
+  const [filter, setFilter] = useState<any>(undefined);
+  const [skip, setSkip] = useState(0);
+  const [take, setTake] = useState(10);
+  const [columns, setColumns] = useState<any>(column);
+  const [search, setSearch] = useState("");
   const pageChange = (event) => {
     setSkip(event.page.skip);
     setTake(event.page.take);
@@ -72,13 +51,34 @@ const DemoGrid = () => {
     _export.current.save();
   };
 
+  const onColumnsSubmit = (columnsState: any) => {
+    setColumns(columnsState);
+  };
   return (
     <div className="kendo-ui-grid">
       <h3>Personnel List</h3>
+      {/* {console.log("fiter...",filter)} */}
+
+      {/* <button onClick={handleSearch}>Search</button> */}
       <ExcelExport data={data.listPerson} ref={_export}>
         <Grid
-          style={{ height: "calc(100% - 62px)" ,width:"80%"}}
-          data={filterBy(orderBy(data.listPerson,sort),filter).slice(skip, take + skip)}
+          style={{ height: "calc(100% - 62px)", width: "80%" }}
+          // data={filterBy(orderBy(data.listPerson.filter(i=>{ i.personId && i.message.toLowerCase().includes(search.)}),sort),filter).slice(skip, take + skip)}
+          data={filterBy(
+            orderBy(
+              data.listPerson.filter((item) => {
+                if (search.toLowerCase() !== null) {
+                  return Object.keys(item).some((key) =>
+                    item[key]?.toLowerCase().includes(search.toLowerCase())
+                  );
+                } else {
+                  return item;
+                }
+              }),
+              sort
+            ),
+            filter
+          ).slice(skip, take + skip)}
           skip={skip}
           take={take}
           total={data.listPerson.length}
@@ -89,34 +89,38 @@ const DemoGrid = () => {
           expandField="expanded"
           detail={DetailComponent}
           onExpandChange={expandChange}
-          
-        sortable
-        sort={sort}
-        onSortChange={(e) => {
-           setSort(e.sort)
-        }}
-        // data={filterBy(sampleProducts, this.state.filter)}
-        filterable
-        filter={filter}
-        filterOperators={{
-          'text': [
-              { text: 'grid.filterContainsOperator', operator: 'contains' }
-          ],
-          'numeric': [
-              { text: 'grid.filterEqOperator', operator: 'eq' }
-          ],
-          'date': [
-              { text: 'grid.filterEqOperator', operator: 'eq' }
-          ],
-          'boolean': [
-              { text: 'grid.filterEqOperator', operator: 'eq' }
-          ]
-        }}
-        onFilterChange={(e) => {
-                setFilter(e.filter)
-        }}
+          sortable
+          sort={sort}
+          onSortChange={(e) => {
+            setSort(e.sort);
+          }}
+          filterable
+          filter={filter}
+          // filterOperators={{
+          //   'text': [
+          //       { text: 'grid.filterContainsOperator', operator: 'contains' }
+          //   ],
+          //   'numeric': [
+          //       { text: 'grid.filterEqOperator', operator: 'eq' }
+          //   ],
+          //   'date': [
+          //       { text: 'grid.filterEqOperator', operator: 'eq' }
+          //   ],
+          //   'boolean': [
+          //       { text: 'grid.filterEqOperator', operator: 'eq' }
+          //   ]
+          // }}
+          onFilterChange={(e) => {
+            setFilter(e.filter);
+          }}
         >
           <GridToolbar>
+            <input
+              name="search"
+              value={search}
+              placeholder="search...."
+              onChange={(e) => setSearch(e.target.value)}
+            />
             <button
               title="Person_list"
               className="k-button k-primary"
@@ -124,8 +128,17 @@ const DemoGrid = () => {
             >
               Export to Excel
             </button>
+            
+            <button >
+              <CustomColumnMenu
+                // {...props}
+                columns={columns}
+                onColumnsSubmit={onColumnsSubmit}
+              />
+            </button>
+            
           </GridToolbar>
-          <Column
+          {/* <Column
             width="80px"
             field="empId"
             title="ID"
@@ -144,7 +157,31 @@ const DemoGrid = () => {
           <Column field="supervisor" title="Supervisor" width="200px"/>
           <Column field="cellPhone" title="Cell Phone" width="200px" />
           <Column field="enabledFlag" title="Enabled Flag" width="200px" filter={'boolean'}/>
-          <Column field="pagerNational" title="Pager National" width="200px"/>
+          <Column field="pagerNational" title="Pager National" width="200px"/> */}
+          {columns.map(
+            (column, idx) =>
+              column.show && (
+                <Column
+                  key={idx}
+                  field={column.field}
+                  title={column.title}
+                  filter={column.filter}
+                  locked={column.locked}
+                  width={column.width}
+                  columnMenu={
+                    ColumnMenu
+                    // props =>{
+                    // {console.log("props...",props)}
+                    //  return   <CustomColumnMenu
+                    //         // {...props}
+                    //         columns={columns}
+                    //         onColumnsSubmit={onColumnsSubmit}
+                    //     />
+                    // }
+                  }
+                />
+              )
+          )}
         </Grid>
       </ExcelExport>
     </div>
@@ -152,4 +189,3 @@ const DemoGrid = () => {
 };
 
 export default DemoGrid;
-
