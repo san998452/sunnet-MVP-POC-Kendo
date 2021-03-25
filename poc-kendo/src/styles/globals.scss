@@ -2,8 +2,7 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+   font-family: 'Roboto', sans-serif;
     font-size: 13px;
 }
 
@@ -17,10 +16,16 @@ a {
 }
 .kendo-ui-grid
 {
-  height: calc(100% - 65px);
+  width: calc(100% - 14px);
+  //height: calc(100% - 50px);
+  height: 100%;
   overflow: auto;
-  padding: 0 20px 20px;
+  padding: 0 20px 5px
   
+}
+
+.k-grid th, .k-grid td {
+  padding: 7px 12px !important;
 }
 
 
@@ -39,6 +44,7 @@ a {
 {
   display: flex;
   flex-direction: row;
+  overflow: hidden;
 }
 .leftbar
 {
@@ -64,7 +70,7 @@ a {
 .rightbar
 {
   flex: 1;
-  //height: calc(100vh);
+  height: 100vh;
   display: flex;
   justify-content: space-between;
   flex-direction: column;
@@ -87,4 +93,24 @@ a {
     }
     
   }
+}
+
+.boilerplate-container
+{
+  padding: 20px 50px;
+  margin-left: 50px;
+  border-left: 3px solid rgb(4, 146, 4);
+}
+
+.m-50
+{
+  margin-top: 50px;
+  border-top: 1px solid rgb(189, 189, 189);
+  padding-top: 20px;
+}
+.autoresizer-tbl
+{
+  flex: 1;
+  width: auto !important;
+  height: calc(100% - 50px) !important;
 }

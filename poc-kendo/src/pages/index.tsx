@@ -1,13 +1,11 @@
-import DemoGrid from './demo-grid';
-import Leftbar from './leftbar';
-import Header from './header';
-import Footer from './footer';
+import DemoGrid from "./demo-grid";
+import Leftbar from "./leftbar";
+import Header from "./header";
+import Footer from "./footer";
 const Index = () => {
-  return(
+  return (
     <>
-     
-      <div className="maincontainer">  
-
+      <div className="maincontainer">
         <Leftbar />
         <div className="rightbar">
           <Header />
@@ -16,6 +14,6 @@ const Index = () => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 export default Index;
