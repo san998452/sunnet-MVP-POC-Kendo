@@ -12,6 +12,8 @@ import { ExcelExport } from "@progress/kendo-react-excel-export";
 import { GridPDFExport } from "@progress/kendo-react-pdf";
 import { ColumnMenu } from "../components/Admin/ListFilter/columnMenu";
 
+import AutoSizer from 'react-virtualized-auto-sizer'; 
+
 class DetailComponent extends GridDetailRow {
   render() {
     const dataItem = this.props.dataItem;
@@ -97,6 +99,14 @@ const DemoGrid = () => {
   );
 
   return (
+    <AutoSizer className="autoresizer-tbl">
+    {({ height, width }) => {
+        console.log(`Height: ${height} | Width: ${width}`);
+        const pageSize = Math.floor((height - 355) / 48);
+        console.log(`Page Size: ${pageSize}`);
+        setTake(pageSize);
+        return(
+
     <div className="kendo-ui-grid">
       <h3>Personnel List</h3>
       <ExcelExport data={data.listPerson} ref={_export}>
@@ -107,7 +117,7 @@ const DemoGrid = () => {
             take + skip
           )}
           skip={skip}
-          take={take}
+          take={pageSize}
           total={data.listPerson.length}
           pageable={{ pageSizes: [5, 10, 20, 50, 100, 500] }}
           onPageChange={pageChange}
@@ -208,6 +218,9 @@ const DemoGrid = () => {
         {grid}
       </GridPDFExport>
     </div>
+      );
+    }}
+    </AutoSizer>
   );
 };
 
