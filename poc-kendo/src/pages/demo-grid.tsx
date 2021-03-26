@@ -13,8 +13,23 @@ import { GridPDFExport } from "@progress/kendo-react-pdf";
 import { ColumnMenu } from "../components/Admin/ListFilter/columnMenu";
 
 class DetailComponent extends GridDetailRow {
+  constructor(props) {
+    super(props);
+    this.state = { personData : []}
+    console.log('props ', props)
+  }
+
+  componentDidMount() {
+    const { dataItem } = this.props.dataItem;
+    fetch(
+      `http://192.168.101.249:8094/api/person/${dataItem.personId}/foreman-station`
+    ).then(res => console.log('response ', res));
+  }
+
   render() {
     const dataItem = this.props.dataItem;
+    console.log('data item', dataItem)
+
     return (
       <section>
         <p>Not data</p>
@@ -25,11 +40,13 @@ class DetailComponent extends GridDetailRow {
 
 const PageTemplate = (props) => (
   <div>
-    <div style={{position: 'absolute', top: "10px", width: "100%", left: "50%" }}>
-      <b>Sunnet Person List</b>
+    <div
+      style={{ position: "absolute", top: "2px", width: "100%", left: "40%" }}
+    >
+      <p style={{fontSize: "20px", fontWeight: "bold"}}>Sunnet Personnel List</p>
     </div>
-    <div style={{position: "absolute", bottom: "10px", left: "10px"}}>
-      Page {props.pageNum} of {props.totalPages}
+    <div style={{ position: "absolute", bottom: "10px", left: "20px" }}>
+      <p style={{fontSize: "15px"}}>Page {props.pageNum} of {props.totalPages}</p>
     </div>
   </div>
 );
@@ -51,7 +68,7 @@ const DemoGrid = () => {
   if (error) return `Error! ${error.message}`;
 
   const expandChange = (event) => {
-    console.log("event ", event);
+    // console.log("event ", event);
     // event.dataItem.expanded = !event.dataItem.expanded;
     // forceUpdate();
   };
@@ -113,8 +130,8 @@ const DemoGrid = () => {
           onPageChange={pageChange}
           resizable
           reorderable
-          expandField="expanded"
           detail={DetailComponent}
+          expandField="expanded"
           onExpandChange={expandChange}
           sortable
           sort={sort}
