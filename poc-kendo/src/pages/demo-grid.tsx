@@ -11,12 +11,30 @@ import { ListPersonDocument } from "../graphql-operations";
 import { ExcelExport } from "@progress/kendo-react-excel-export";
 import { GridPDFExport } from "@progress/kendo-react-pdf";
 import { ColumnMenu } from "../components/Admin/ListFilter/columnMenu";
+import { CustomColumnMenu } from "../components/Admin/ListFilter/Show_Hide_columns";
+import column from "../components/Admin/ListFilter/column";
+import { info } from "node:console";
 
 import AutoSizer from 'react-virtualized-auto-sizer'; 
 
 class DetailComponent extends GridDetailRow {
+  constructor(props) {
+    super(props);
+    this.state = { personData : []}
+    console.log('props ', props)
+  }
+
+  componentDidMount() {
+    const { dataItem } = this.props.dataItem;
+    fetch(
+      `http://192.168.101.249:8094/api/person/${dataItem.personId}/foreman-station`
+    ).then(res => console.log('response ', res));
+  }
+
   render() {
     const dataItem = this.props.dataItem;
+    console.log('data item', dataItem)
+
     return (
       <section>
         <p>Not data</p>
@@ -27,11 +45,13 @@ class DetailComponent extends GridDetailRow {
 
 const PageTemplate = (props) => (
   <div>
-    <div style={{position: 'absolute', top: "10px", width: "100%", left: "50%" }}>
-      <b>Sunnet Person List</b>
+    <div
+      style={{ position: "absolute", top: "2px", width: "100%", left: "40%" }}
+    >
+      <p style={{fontSize: "20px", fontWeight: "bold"}}>Sunnet Personnel List</p>
     </div>
-    <div style={{position: "absolute", bottom: "10px", left: "10px"}}>
-      Page {props.pageNum} of {props.totalPages}
+    <div style={{ position: "absolute", bottom: "10px", left: "20px" }}>
+      <p style={{fontSize: "15px"}}>Page {props.pageNum} of {props.totalPages}</p>
     </div>
   </div>
 );
@@ -39,9 +59,11 @@ const PageTemplate = (props) => (
 const DemoGrid = () => {
   const { loading, error, data } = useQuery(ListPersonDocument);
   const [sort, setSort] = useState<any>([{ field: "empId", dir: "desc" }]);
+  const [filter, setFilter] = useState<any>(undefined);
   const [skip, setSkip] = useState(0);
   const [take, setTake] = useState(10);
-  const [filter, setFilter] = useState<any>(undefined);
+  const [columns, setColumns] = useState<any>(column);
+  const [search, setSearch] = useState("");
   const [isExporting, setExporting] = useState(false);
 
   const pageChange = (event) => {
@@ -53,7 +75,7 @@ const DemoGrid = () => {
   if (error) return `Error! ${error.message}`;
 
   const expandChange = (event) => {
-    console.log("event ", event);
+    // console.log("event ", event);
     // event.dataItem.expanded = !event.dataItem.expanded;
     // forceUpdate();
   };
@@ -63,6 +85,9 @@ const DemoGrid = () => {
     _export.current.save();
   };
 
+  const onColumnsSubmit = (columnsState: any) => {
+    setColumns(columnsState);
+  };
   let _gridPDFExport = React.createRef();
   const exportPDF = () => {
     // Simulate a response from a web request.
@@ -110,13 +135,27 @@ const DemoGrid = () => {
 
     <div className="kendo-ui-grid">
       <h3>Personnel List</h3>
+      {/* {console.log("fiter...",filter)} */}
+
+      {/* <button onClick={handleSearch}>Search</button> */}
       <ExcelExport data={data.listPerson} ref={_export}>
         <Grid
-          style={{ height: "calc(100% - 62px)", width: "80%" }}
-          data={filterBy(orderBy(data.listPerson, sort), filter).slice(
-            skip,
-            take + skip
-          )}
+          style={{ height: "calc(100% - 62px)" }}
+          data={filterBy(
+            orderBy(
+              data.listPerson.filter((item) => {
+                if (search.toLowerCase() !== null) {
+                  return Object.keys(item).some((key) =>
+                    item[key]?.toLowerCase().includes(search.toLowerCase())
+                  );
+                } else {
+                  return item;
+                }
+              }),
+              sort
+            ),
+            filter
+          ).slice(skip, take + skip)}
           skip={skip}
           take={pageSize}
           total={data.listPerson.length}
@@ -124,30 +163,27 @@ const DemoGrid = () => {
           onPageChange={pageChange}
           resizable
           reorderable
-          expandField="expanded"
           detail={DetailComponent}
+          expandField="expanded"
           onExpandChange={expandChange}
           sortable
           sort={sort}
           onSortChange={(e) => {
             setSort(e.sort);
           }}
-          // data={filterBy(sampleProducts, this.state.filter)}
           filterable
           filter={filter}
-          filterOperators={{
-            text: [
-              { text: "grid.filterContainsOperator", operator: "contains" },
-            ],
-            numeric: [{ text: "grid.filterEqOperator", operator: "eq" }],
-            date: [{ text: "grid.filterEqOperator", operator: "eq" }],
-            boolean: [{ text: "grid.filterEqOperator", operator: "eq" }],
-          }}
           onFilterChange={(e) => {
             setFilter(e.filter);
           }}
         >
           <GridToolbar>
+            <input
+              name="search"
+              value={search}
+              placeholder="search...."
+              onChange={(e) => setSearch(e.target.value)}
+            />
             <button
               title="Export to Excel"
               className="k-button k-primary"
@@ -155,6 +191,15 @@ const DemoGrid = () => {
             >
               Export to Excel
             </button>
+            
+            <button >
+              <CustomColumnMenu
+                // {...props}
+                columns={columns}
+                onColumnsSubmit={onColumnsSubmit}
+              />
+            </button>
+            
             <button
               title="Export PDF"
               className="k-button k-primary"
@@ -164,7 +209,7 @@ const DemoGrid = () => {
               Export PDF
             </button>
           </GridToolbar>
-          <Column
+          {/* <Column
             width="80px"
             field="empId"
             title="ID"
@@ -200,13 +245,24 @@ const DemoGrid = () => {
           />
           <Column field="supervisor" title="Supervisor" width="200px" />
           <Column field="cellPhone" title="Cell Phone" width="200px" />
-          <Column
-            field="enabledFlag"
-            title="Enabled Flag"
-            width="200px"
-            filter={"boolean"}
-          />
-          <Column field="pagerNational" title="Pager National" width="200px" />
+          <Column field="enabledFlag" title="Enabled Flag" width="200px" filter={'boolean'}/>
+          <Column field="pagerNational" title="Pager National" width="200px"/> */}
+          {columns.map(
+            (column, idx) =>
+              column.show && (
+                <Column
+                  key={idx}
+                  field={column.field}
+                  title={column.title}
+                  filter={column.filter}
+                  locked={column.locked}
+                  width={column.width}
+                  columnMenu={
+                    ColumnMenu
+                  }
+                />
+              )
+          )}
         </Grid>
       </ExcelExport>
       <GridPDFExport
