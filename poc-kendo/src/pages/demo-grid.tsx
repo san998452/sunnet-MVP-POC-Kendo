@@ -11,6 +11,11 @@ import { ListPersonDocument } from "../graphql-operations";
 import { ExcelExport } from "@progress/kendo-react-excel-export";
 import { GridPDFExport } from "@progress/kendo-react-pdf";
 import { ColumnMenu } from "../components/Admin/ListFilter/columnMenu";
+import { CustomColumnMenu } from "../components/Admin/ListFilter/Show_Hide_columns";
+import column from "../components/Admin/ListFilter/column";
+import { info } from "node:console";
+
+import AutoSizer from 'react-virtualized-auto-sizer'; 
 
 class DetailComponent extends GridDetailRow {
   constructor(props) {
@@ -54,9 +59,11 @@ const PageTemplate = (props) => (
 const DemoGrid = () => {
   const { loading, error, data } = useQuery(ListPersonDocument);
   const [sort, setSort] = useState<any>([{ field: "empId", dir: "desc" }]);
+  const [filter, setFilter] = useState<any>(undefined);
   const [skip, setSkip] = useState(0);
   const [take, setTake] = useState(10);
-  const [filter, setFilter] = useState<any>(undefined);
+  const [columns, setColumns] = useState<any>(column);
+  const [search, setSearch] = useState("");
   const [isExporting, setExporting] = useState(false);
 
   const pageChange = (event) => {
@@ -78,6 +85,9 @@ const DemoGrid = () => {
     _export.current.save();
   };
 
+  const onColumnsSubmit = (columnsState: any) => {
+    setColumns(columnsState);
+  };
   let _gridPDFExport = React.createRef();
   const exportPDF = () => {
     // Simulate a response from a web request.
@@ -114,17 +124,40 @@ const DemoGrid = () => {
   );
 
   return (
+    <AutoSizer className="autoresizer-tbl">
+    {({ height, width }) => {
+        console.log(`Height: ${height} | Width: ${width}`);
+        const pageSize = Math.floor((height - 375) / 48);
+        console.log(`Page Size: ${pageSize}`);
+        //updating kendo pagesize
+        setTake(pageSize);
+        return(
+
     <div className="kendo-ui-grid">
       <h3>Personnel List</h3>
+      {/* {console.log("fiter...",filter)} */}
+
+      {/* <button onClick={handleSearch}>Search</button> */}
       <ExcelExport data={data.listPerson} ref={_export}>
         <Grid
-          style={{ height: "calc(100% - 62px)", width: "80%" }}
-          data={filterBy(orderBy(data.listPerson, sort), filter).slice(
-            skip,
-            take + skip
-          )}
+          style={{ height: "calc(100% - 62px)" }}
+          data={filterBy(
+            orderBy(
+              data.listPerson.filter((item) => {
+                if (search.toLowerCase() !== null) {
+                  return Object.keys(item).some((key) =>
+                    item[key]?.toLowerCase().includes(search.toLowerCase())
+                  );
+                } else {
+                  return item;
+                }
+              }),
+              sort
+            ),
+            filter
+          ).slice(skip, take + skip)}
           skip={skip}
-          take={take}
+          take={pageSize}
           total={data.listPerson.length}
           pageable={{ pageSizes: [5, 10, 20, 50, 100, 500] }}
           onPageChange={pageChange}
@@ -138,22 +171,19 @@ const DemoGrid = () => {
           onSortChange={(e) => {
             setSort(e.sort);
           }}
-          // data={filterBy(sampleProducts, this.state.filter)}
           filterable
           filter={filter}
-          filterOperators={{
-            text: [
-              { text: "grid.filterContainsOperator", operator: "contains" },
-            ],
-            numeric: [{ text: "grid.filterEqOperator", operator: "eq" }],
-            date: [{ text: "grid.filterEqOperator", operator: "eq" }],
-            boolean: [{ text: "grid.filterEqOperator", operator: "eq" }],
-          }}
           onFilterChange={(e) => {
             setFilter(e.filter);
           }}
         >
           <GridToolbar>
+            <input
+              name="search"
+              value={search}
+              placeholder="search...."
+              onChange={(e) => setSearch(e.target.value)}
+            />
             <button
               title="Export to Excel"
               className="k-button k-primary"
@@ -161,6 +191,15 @@ const DemoGrid = () => {
             >
               Export to Excel
             </button>
+            
+            <button >
+              <CustomColumnMenu
+                // {...props}
+                columns={columns}
+                onColumnsSubmit={onColumnsSubmit}
+              />
+            </button>
+            
             <button
               title="Export PDF"
               className="k-button k-primary"
@@ -170,7 +209,7 @@ const DemoGrid = () => {
               Export PDF
             </button>
           </GridToolbar>
-          <Column
+          {/* <Column
             width="80px"
             field="empId"
             title="ID"
@@ -206,13 +245,24 @@ const DemoGrid = () => {
           />
           <Column field="supervisor" title="Supervisor" width="200px" />
           <Column field="cellPhone" title="Cell Phone" width="200px" />
-          <Column
-            field="enabledFlag"
-            title="Enabled Flag"
-            width="200px"
-            filter={"boolean"}
-          />
-          <Column field="pagerNational" title="Pager National" width="200px" />
+          <Column field="enabledFlag" title="Enabled Flag" width="200px" filter={'boolean'}/>
+          <Column field="pagerNational" title="Pager National" width="200px"/> */}
+          {columns.map(
+            (column, idx) =>
+              column.show && (
+                <Column
+                  key={idx}
+                  field={column.field}
+                  title={column.title}
+                  filter={column.filter}
+                  locked={column.locked}
+                  width={column.width}
+                  columnMenu={
+                    ColumnMenu
+                  }
+                />
+              )
+          )}
         </Grid>
       </ExcelExport>
       <GridPDFExport
@@ -225,6 +275,9 @@ const DemoGrid = () => {
         {grid}
       </GridPDFExport>
     </div>
+      );
+    }}
+    </AutoSizer>
   );
 };
 
