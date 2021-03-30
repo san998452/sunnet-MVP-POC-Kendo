@@ -43,48 +43,17 @@ query listPerson {
   }
 }
 
-# query allItemLists {
-#   allItemLists {
-#     label
-#     name
-#     menuItem
-#     url
-#     itemList
-#   }
-# }
+query GetStationsByPersonId($personId: ID!) {
+  getStationsByPersonId(id: $personId) {
+    associateId
+    group
+    priority
+    stationName
+  }
+}
 
 # query PersonList($id: ID!) {
 #   PersonList(id: $id) {
-#     personId
-#     empId
-#     firstName
-#     lastName
-#     workPhone
-#     homePhone
-#     email
-#     location
-#     cellPhone
-#     faxPhone
-#     ext
-#     title
-#     pagerPhone
-#     pagerNumber
-#     pagerNumberPin
-#     pagerNational
-#     supervisor
-#     radioTruck
-#     memberCode
-#     groupName
-#     limited
-#     fullName
-#     enabled
-#     enableFlag
-#     id
-#   }
-# }
-
-# query allPersonLists {
-#   allPersonLists {
 #     personId
 #     empId
 #     firstName

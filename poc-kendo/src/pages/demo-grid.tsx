@@ -1,14 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useQuery } from "@apollo/client";
+import { gql, useLazyQuery, useQuery } from "@apollo/client";
 import {
   Grid,
   GridColumn as Column,
-  GridDetailRow,
   GridToolbar,
 } from "@progress/kendo-react-grid";
-import { CSVLink, CSVDownload } from "react-csv";
+import { CSVLink } from "react-csv";
 import { orderBy, filterBy, process } from "@progress/kendo-data-query";
-import AutoSizer from 'react-virtualized-auto-sizer'; 
+import AutoSizer from "react-virtualized-auto-sizer";
 import { ExcelExport } from "@progress/kendo-react-excel-export";
 import { GridPDFExport } from "@progress/kendo-react-pdf";
 
@@ -18,48 +17,39 @@ import { CustomColumnMenu } from "../components/Admin/ListFilter/Show_Hide_colum
 import column from "../components/Admin/ListFilter/column";
 import { HEADERS } from "../components/constants/Headers";
 
-class DetailComponent extends GridDetailRow {
-  constructor(props) {
-    super(props);
-    this.state = { personData : []}
-    console.log('props ', props)
+const GET_STATIONS = gql`
+  query GetStationsByPersonId($personId: Int) {
+    getStationsByPersonId(personId: $personId) {
+      associateId
+      group
+      priority
+      stationName
+    }
   }
-
-  componentDidMount() {
-    const { dataItem } = this.props.dataItem;
-    fetch(
-      `http://192.168.101.249:8094/api/person/${dataItem.personId}/foreman-station`
-    ).then(res => console.log('response ', res));
-  }
-
-  render() {
-    const dataItem = this.props.dataItem;
-    console.log('data item', dataItem)
-
-    return (
-      <section>
-        <p>Not data</p>
-      </section>
-    );
-  }
-}
+`;
 
 const PageTemplate = (props) => (
   <div>
     <div
       style={{ position: "absolute", top: "2px", width: "100%", left: "40%" }}
     >
-      <p style={{fontSize: "20px", fontWeight: "bold"}}>Sunnet Personnel List</p>
+      <p style={{ fontSize: "20px", fontWeight: "bold" }}>
+        Sunnet Personnel List
+      </p>
     </div>
     <div style={{ position: "absolute", bottom: "10px", left: "20px" }}>
-      <p style={{fontSize: "15px"}}>Page {props.pageNum} of {props.totalPages}</p>
+      <p style={{ fontSize: "15px" }}>
+        Page {props.pageNum} of {props.totalPages}
+      </p>
     </div>
   </div>
 );
 
 const DemoGrid = () => {
   const { loading, error, data } = useQuery(ListPersonDocument);
-  const [persons, setPersons] = useState([])
+  const [persons, setPersons] = useState([]);
+  const [getStations, { data: stationData }] = useLazyQuery(GET_STATIONS);
+  const [stations, setStations] = useState([]);
   const [sort, setSort] = useState<any>([{ field: "empId", dir: "desc" }]);
   const [filter, setFilter] = useState<any>(undefined);
   const [skip, setSkip] = useState(0);
@@ -69,33 +59,57 @@ const DemoGrid = () => {
   const [isExporting, setExporting] = useState(false);
 
   useEffect(() => {
-    if(data) {
-      setPersons(data.listPerson)
+    if (data) {
+      let personData = data.listPerson.map((person) => ({
+        ...person,
+        expanded: false,
+      }));
+      setPersons(personData.slice(0));
     }
-  }, [data])
+    if (stationData) {
+      setStations(stationData.getStationsByPersonId);
+    }
+  }, [data, stationData]);
+
+  const DetailComponent = (props) => {
+    if (stations) {
+      return (
+        <Grid data={stations}>
+          {/* <Column field="associateId" title="Associate ID" width="120px" /> */}
+          <Column field="group" title="Group" />
+          <Column field="priority" title="Priority" />
+          <Column field="stationName" title="Station Name" />
+        </Grid>
+      );
+    }
+    return (
+      <div style={{ height: "50px", width: "100%" }}>
+        <div style={{ position: "absolute", width: "100%" }}>
+          <div className="k-loading-image" />
+        </div>
+      </div>
+    );
+  };
 
   const pageChange = (event) => {
     setSkip(event.page.skip);
     setTake(event.page.take);
   };
 
-  // if (loading) return "Loading...";
-  // if (error) return `Error! ${error.message}`;
+  if (loading) return <p>Loading...</p>
+  if (error) return <p>{`Error! ${error.message}`}</p>;
 
   const expandChange = (event) => {
-    console.log("event ", event);
-    // const personList = persons.slice(0);
-    
-    console.log('person list', persons)
-    // setPersons(
-    //   persons.map(item => {
-    //     if (item.personId == event.dataItem.personId) {
-    //       console.log('expanding', item)
-    //       // item.expanded = !item.expanded;
-    //     }
-    //     return item;
-    //   })
-    // );
+    getStations({ variables: { personId: Number(event.dataItem.personId) } });
+
+    setPersons(
+      persons.map((item) => {
+        if (item.personId == event.dataItem.personId) {
+          item.expanded = !item.expanded;
+        }
+        return item;
+      })
+    );
   };
 
   let _export = React.createRef();
@@ -144,98 +158,96 @@ const DemoGrid = () => {
 
   return (
     <AutoSizer className="autoresizer-tbl">
-    {({ height, width }) => {
+      {({ height, width }) => {
         const pageSize = Math.floor((height - 375) / 48);
         //updating kendo pagesize
         setTake(pageSize);
-        return(
+        return (
+          <div className="kendo-ui-grid">
+            <h3>Personnel List</h3>
 
-    <div className="kendo-ui-grid">
-      <h3>Personnel List</h3>
-
-      <ExcelExport data={persons} ref={_export}>
-        <Grid
-          style={{ height: "calc(100% - 62px)" }}
-          data={filterBy(
-            orderBy(
-              persons.filter((item) => {
-                if (search.toLowerCase() !== null) {
-                  return Object.keys(item).some((key) =>
-                    item[key]?.toLowerCase().includes(search.toLowerCase())
-                  );
-                } else {
-                  return item;
-                }
-              }),
-              sort
-            ),
-            filter
-          ).slice(skip, take + skip)}
-          skip={skip}
-          take={pageSize}
-          total={persons.length}
-          pageable={{ pageSizes: [5, 10, 20, 50, 100, 500] }}
-          onPageChange={pageChange}
-          resizable
-          reorderable
-          detail={DetailComponent}
-          expandField="expanded"
-          onExpandChange={expandChange}
-          sortable
-          sort={sort}
-          onSortChange={(e) => {
-            setSort(e.sort);
-          }}
-          filterable
-          filter={filter}
-          onFilterChange={(e) => {
-            setFilter(e.filter);
-          }}
-        >
-          <GridToolbar>
-            <input
-              name="search"
-              value={search}
-              placeholder="search...."
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <button
-              title="Export to Excel"
-              className="k-button k-primary"
-              onClick={exportFile}
-            >
-              Export to Excel
-            </button>
-            <button
-              title="Export to CSV"
-              className="k-button k-primary"
-            >
-              <CSVLink
-                data={persons}
-                headers={HEADERS}
-                filename={"Person-list.csv"}
+            <ExcelExport data={persons} ref={_export}>
+              <Grid
+                style={{ height: "calc(100% - 62px)" }}
+                data={filterBy(
+                  orderBy(
+                    persons.filter((item) => {
+                      if (search.toLowerCase() !== null) {
+                        return Object.keys(item).some((key) =>
+                          item[key]
+                            ?.toLowerCase()
+                            .includes(search.toLowerCase())
+                        );
+                      } else {
+                        return item;
+                      }
+                    }),
+                    sort
+                  ),
+                  filter
+                ).slice(skip, take + skip)}
+                skip={skip}
+                take={pageSize}
+                total={persons.length}
+                pageable={{ pageSizes: [5, 10, 20, 50, 100, 500] }}
+                onPageChange={pageChange}
+                resizable
+                reorderable
+                detail={DetailComponent}
+                expandField="expanded"
+                onExpandChange={expandChange}
+                sortable
+                sort={sort}
+                onSortChange={(e) => {
+                  setSort(e.sort);
+                }}
+                filterable
+                filter={filter}
+                onFilterChange={(e) => {
+                  setFilter(e.filter);
+                }}
               >
-                Export to CSV
-              </CSVLink>
-            </button>
-            <button >
-              <CustomColumnMenu
-                // {...props}
-                columns={columns}
-                onColumnsSubmit={onColumnsSubmit}
-              />
-            </button>
-            
-            <button
-              title="Export PDF"
-              className="k-button k-primary"
-              onClick={exportPDF}
-              // disabled={isExporting}
-            >
-              Export PDF
-            </button>
-          </GridToolbar>
-          {/* <Column
+                <GridToolbar>
+                  <input
+                    name="search"
+                    value={search}
+                    placeholder="search...."
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                  <button
+                    title="Export to Excel"
+                    className="k-button k-primary"
+                    onClick={exportFile}
+                  >
+                    Export to Excel
+                  </button>
+                  <button title="Export to CSV" className="k-button k-primary">
+                    <CSVLink
+                      data={persons}
+                      headers={HEADERS}
+                      filename={"Person-list.csv"}
+                    >
+                      Export to CSV
+                    </CSVLink>
+                  </button>
+                  <button>
+                    <CustomColumnMenu
+                      // {...props}
+                      columns={columns}
+                      onColumnsSubmit={onColumnsSubmit}
+                    />
+                  </button>
+
+                  <button
+                    title="Export PDF"
+                    className="k-button k-primary"
+                    onClick={exportPDF}
+                    // disabled={isExporting}
+                  >
+                    Export PDF
+                  </button>
+                </GridToolbar>
+                {/* <Column
             width="80px"
             field="empId"
             title="ID"
@@ -273,37 +285,34 @@ const DemoGrid = () => {
           <Column field="cellPhone" title="Cell Phone" width="200px" />
           <Column field="enabledFlag" title="Enabled Flag" width="200px" filter={'boolean'}/>
           <Column field="pagerNational" title="Pager National" width="200px"/> */}
-          {columns.map(
-            (column, idx) =>
-              column.show && (
-                <Column
-                  key={idx}
-                  field={column.field}
-                  title={column.title}
-                  filter={column.filter}
-                  locked={column.locked}
-                  width={column.width}
-                  columnMenu={
-                    ColumnMenu
-                  }
-                />
-              )
-          )}
-        </Grid>
-      </ExcelExport>
-      <GridPDFExport
-        pageTemplate={PageTemplate}
-        paperSize="A4"
-        scale={0.5}
-        ref={_gridPDFExport}
-        margin="1cm"
-      >
-        {grid}
-      </GridPDFExport>
-
-    </div>
-      );
-    }}
+                {columns.map(
+                  (column, idx) =>
+                    column.show && (
+                      <Column
+                        key={idx}
+                        field={column.field}
+                        title={column.title}
+                        filter={column.filter}
+                        locked={column.locked}
+                        width={column.width}
+                        columnMenu={ColumnMenu}
+                      />
+                    )
+                )}
+              </Grid>
+            </ExcelExport>
+            <GridPDFExport
+              pageTemplate={PageTemplate}
+              paperSize="A4"
+              scale={0.5}
+              ref={_gridPDFExport}
+              margin="1cm"
+            >
+              {grid}
+            </GridPDFExport>
+          </div>
+        );
+      }}
     </AutoSizer>
   );
 };
