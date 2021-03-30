@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useQuery } from "@apollo/client";
 import {
   Grid,
@@ -6,16 +6,17 @@ import {
   GridDetailRow,
   GridToolbar,
 } from "@progress/kendo-react-grid";
+import { CSVLink, CSVDownload } from "react-csv";
 import { orderBy, filterBy, process } from "@progress/kendo-data-query";
-import { ListPersonDocument } from "../graphql-operations";
+import AutoSizer from 'react-virtualized-auto-sizer'; 
 import { ExcelExport } from "@progress/kendo-react-excel-export";
 import { GridPDFExport } from "@progress/kendo-react-pdf";
+
+import { ListPersonDocument } from "../graphql-operations";
 import { ColumnMenu } from "../components/Admin/ListFilter/columnMenu";
 import { CustomColumnMenu } from "../components/Admin/ListFilter/Show_Hide_columns";
 import column from "../components/Admin/ListFilter/column";
-import { info } from "node:console";
-
-import AutoSizer from 'react-virtualized-auto-sizer'; 
+import { HEADERS } from "../components/constants/Headers";
 
 class DetailComponent extends GridDetailRow {
   constructor(props) {
@@ -58,6 +59,7 @@ const PageTemplate = (props) => (
 
 const DemoGrid = () => {
   const { loading, error, data } = useQuery(ListPersonDocument);
+  const [persons, setPersons] = useState([])
   const [sort, setSort] = useState<any>([{ field: "empId", dir: "desc" }]);
   const [filter, setFilter] = useState<any>(undefined);
   const [skip, setSkip] = useState(0);
@@ -66,18 +68,34 @@ const DemoGrid = () => {
   const [search, setSearch] = useState("");
   const [isExporting, setExporting] = useState(false);
 
+  useEffect(() => {
+    if(data) {
+      setPersons(data.listPerson)
+    }
+  }, [data])
+
   const pageChange = (event) => {
     setSkip(event.page.skip);
     setTake(event.page.take);
   };
 
-  if (loading) return "Loading...";
-  if (error) return `Error! ${error.message}`;
+  // if (loading) return "Loading...";
+  // if (error) return `Error! ${error.message}`;
 
   const expandChange = (event) => {
-    // console.log("event ", event);
-    // event.dataItem.expanded = !event.dataItem.expanded;
-    // forceUpdate();
+    console.log("event ", event);
+    // const personList = persons.slice(0);
+    
+    console.log('person list', persons)
+    // setPersons(
+    //   persons.map(item => {
+    //     if (item.personId == event.dataItem.personId) {
+    //       console.log('expanding', item)
+    //       // item.expanded = !item.expanded;
+    //     }
+    //     return item;
+    //   })
+    // );
   };
 
   let _export = React.createRef();
@@ -88,6 +106,7 @@ const DemoGrid = () => {
   const onColumnsSubmit = (columnsState: any) => {
     setColumns(columnsState);
   };
+
   let _gridPDFExport = React.createRef();
   const exportPDF = () => {
     // Simulate a response from a web request.
@@ -103,10 +122,10 @@ const DemoGrid = () => {
   const grid = (
     <Grid
       // style={{ height: "calc(100% - 62px)" }}
-      data={data.listPerson.slice(skip, take + skip)}
+      data={persons.slice(skip, take + skip)}
       skip={skip}
       take={take}
-      total={data.listPerson.length}
+      total={persons.length}
     >
       <Column field="empId" title="ID" />
       <Column field="firstName" title="First Name" />
@@ -126,24 +145,20 @@ const DemoGrid = () => {
   return (
     <AutoSizer className="autoresizer-tbl">
     {({ height, width }) => {
-        console.log(`Height: ${height} | Width: ${width}`);
         const pageSize = Math.floor((height - 375) / 48);
-        console.log(`Page Size: ${pageSize}`);
         //updating kendo pagesize
         setTake(pageSize);
         return(
 
     <div className="kendo-ui-grid">
       <h3>Personnel List</h3>
-      {/* {console.log("fiter...",filter)} */}
 
-      {/* <button onClick={handleSearch}>Search</button> */}
-      <ExcelExport data={data.listPerson} ref={_export}>
+      <ExcelExport data={persons} ref={_export}>
         <Grid
           style={{ height: "calc(100% - 62px)" }}
           data={filterBy(
             orderBy(
-              data.listPerson.filter((item) => {
+              persons.filter((item) => {
                 if (search.toLowerCase() !== null) {
                   return Object.keys(item).some((key) =>
                     item[key]?.toLowerCase().includes(search.toLowerCase())
@@ -158,7 +173,7 @@ const DemoGrid = () => {
           ).slice(skip, take + skip)}
           skip={skip}
           take={pageSize}
-          total={data.listPerson.length}
+          total={persons.length}
           pageable={{ pageSizes: [5, 10, 20, 50, 100, 500] }}
           onPageChange={pageChange}
           resizable
@@ -191,7 +206,18 @@ const DemoGrid = () => {
             >
               Export to Excel
             </button>
-            
+            <button
+              title="Export to CSV"
+              className="k-button k-primary"
+            >
+              <CSVLink
+                data={persons}
+                headers={HEADERS}
+                filename={"Person-list.csv"}
+              >
+                Export to CSV
+              </CSVLink>
+            </button>
             <button >
               <CustomColumnMenu
                 // {...props}
@@ -274,6 +300,7 @@ const DemoGrid = () => {
       >
         {grid}
       </GridPDFExport>
+
     </div>
       );
     }}
