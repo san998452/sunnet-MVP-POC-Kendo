@@ -15,7 +15,6 @@ const columns = [
     show: true,
     filter: "text",
     locked: true,
-    columnMenu: { ColumnMenu },
     width: "200px",
   },
   {

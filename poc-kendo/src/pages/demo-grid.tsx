@@ -16,6 +16,8 @@ import column from "../components/Admin/ListFilter/column";
 import { info } from "node:console";
 
 import AutoSizer from 'react-virtualized-auto-sizer'; 
+import { EditCell } from "../components/Admin/ListFilter/EditCell";
+import EditForm from "../components/Admin/ListFilter/EditForm";
 
 class DetailComponent extends GridDetailRow {
   render() {
@@ -48,7 +50,9 @@ const DemoGrid = () => {
   const [columns, setColumns] = useState<any>(column);
   const [search, setSearch] = useState("");
   const [isExporting, setExporting] = useState(false);
-
+  const [editID,setEditID]=useState(null)
+  const [editItem,setEditItem ]=useState({})
+  const [openForm, setOpenForm] = useState(false)
   const pageChange = (event) => {
     setSkip(event.page.skip);
     setTake(event.page.take);
@@ -105,7 +109,85 @@ const DemoGrid = () => {
       <Column field="pagerNational" title="Pager National" /> */}
     </Grid>
   );
+//   const rowClick = (event) => {
+//     setEditID( event.dataItem.ProductID)
+// };
 
+// var editField = "inEdit";
+// const CommandCell = props => (
+//   <EditCell
+//       {...props}
+//       edit={enterEdit}
+//       // remove={remove}
+//       // add={this.add}
+//       // discard={this.discard}
+//       // update={this.update}
+//       // cancel={this.cancel}
+//       editField={editField}
+//   />
+// );
+//  const itemChange = (event) => {
+//   const inEditID = event.dataItem.ProductID;
+//   const data1 = data.listPerson?.map(item =>
+//       item.personId === inEditID ? {...item, [event.field]: event.value} : item
+//   );
+//   console.log("edited...data",data1)
+//   // this.setState({ data });
+// };
+
+// const enterEdit = (dataItem) => {
+//  data.listPerson?.map(item =>
+//           item.personId === dataItem.perdonId ?
+//           { ...item, inEdit: true } : item
+//       )
+//       // console.log("info....",info)
+// }
+
+//  const closeEdit = (event) => {
+//   if (event.target === event.currentTarget) {
+//        setEditID( null );
+//   }
+// };
+const handleSubmit = (event) => {
+  // this.setState({
+  //     data: this.state.data.map(item => {
+  //         if (event.ProductID === item.ProductID) {
+  //             item = { ...event };
+  //         }
+  //         return item;
+  //     }),
+  //     openForm: false
+  // });
+}
+
+
+const handleCancelEdit = () => {
+   setOpenForm( false)
+}
+
+const enterEdit = item => {
+  // this.setState({
+      setOpenForm( true)
+      setEditItem( item)
+      console.log("Edit items...",editItem)
+  // });
+}
+
+const EditCommandCell = props => {
+  return (
+      <td>
+          <button
+              className="k-button k-primary"
+              onClick={() => props.enterEdit(props.dataItem)}
+          >
+              Edit
+    </button>
+      </td>
+  );
+};
+const MyEditCommandCell = props => (
+  <EditCommandCell {...props} enterEdit={enterEdit} />
+);
   return (
     <AutoSizer className="autoresizer-tbl">
     {({ height, width }) => {
@@ -230,6 +312,7 @@ const DemoGrid = () => {
           <Column field="cellPhone" title="Cell Phone" width="200px" />
           <Column field="enabledFlag" title="Enabled Flag" width="200px" filter={'boolean'}/>
           <Column field="pagerNational" title="Pager National" width="200px"/> */}
+          <Column cell={MyEditCommandCell} width="80px" filterable={false} />
           {columns.map(
             (column, idx) =>
               column.show && (
@@ -246,7 +329,9 @@ const DemoGrid = () => {
                 />
               )
           )}
+
         </Grid>
+        {/* {openForm && <EditForm cancelEdit={handleCancelEdit} onSubmit={handleSubmit} item={editItem} />} */}
       </ExcelExport>
       <GridPDFExport
         pageTemplate={PageTemplate}
