@@ -18,9 +18,24 @@ const NonNegativeNumericInput = fieldRenderProps => {
     );
 };
 
+const emailRegex = new RegExp(/\S+@\S+\.\S+/);
+const emailValidator = (value) => (emailRegex.test(value) ? "" : "Please enter a valid email.");
+const EmailInput = (fieldRenderProps) => {
+  const { validationMessage, visited, ...others } = fieldRenderProps;
+  return (
+    <div>
+      <Input {...others} />
+      {
+        visited && validationMessage &&
+          (<Error>{validationMessage}</Error>)
+      }
+    </div>
+  );
+};
+
 const EditForm = props => {
     return (
-        <Dialog title={`Edit Person`} onClose={props.cancelEdit} initialHeight={450}>
+        <Window title={"Edit Person"} onClose={props.cancelEdit} initialHeight={350} width={600}>
             <Form
                 onSubmit={props.onSubmit}
                 initialValues={props.item}
@@ -33,47 +48,30 @@ const EditForm = props => {
                                     component={Input}
                                     label={"First Name"}
                                 />
+                                </div>
+                    <div className="mb-3">
+
                                 <Field
                                     name={"lastName"}
                                     component={Input}
                                     label={"Last Name"}
                                 />
+                                </div>
+                    <div className="mb-3">
+
                                 <Field
                                     name={"email"}
-                                    component={Input}
-                                    label={"Email"}
+                                    type={"email"} component={EmailInput} label={"Email"} validator={emailValidator}
                                 />
+                                </div>
+                    <div className="mb-3">
+
                                 <Field
                                     name={"homePhone"}
                                     component={Input}
                                     label={"Home Phone"}
                                 />
                             </div>
-                            {/* <div className="mb-3">
-                                <Field
-                                    name={"Category"}
-                                    component={DropDownList}
-                                    data={categories}
-                                    textField={"CategoryName"}
-                                    label={"Category"}
-                                />
-                            </div> */}
-                            {/* <div className="mb-3">
-                                <Field
-                                    name={"UnitPrice"}
-                                    component={NonNegativeNumericInput}
-                                    label={"Price"}
-                                    validator={minValueValidator}
-                                />
-                            </div>
-                            <div className="mb-3">
-                                <Field
-                                    name={"UnitsInStock"}
-                                    component={NonNegativeNumericInput}
-                                    label={"In stock"}
-                                    validator={minValueValidator}
-                                />
-                            </div> */}
                         </fieldset>
                         <div className="k-form-buttons">
                             <button
@@ -82,7 +80,7 @@ const EditForm = props => {
                                 disabled={!formRenderProps.allowSubmit}
                             >
                                 Update
-              </button>
+                            </button>
                             <button
                                 type={"submit"}
                                 className="k-button"
@@ -94,7 +92,7 @@ const EditForm = props => {
                     </FormElement>
                 )}
             />
-        </Dialog>
+        </Window>
     );
 };
 export default EditForm;

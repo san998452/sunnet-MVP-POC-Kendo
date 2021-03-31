@@ -7,7 +7,7 @@ const columns = [
     show: true,
     filter: "text",
     locked: true,
-    width: "80px",
+    width: "150px",
   },
   {
     title: "First Name",
