@@ -1,12 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useQuery } from "@apollo/client";
+import { gql, useLazyQuery, useQuery } from "@apollo/client";
 import {
   Grid,
   GridColumn as Column,
-  GridDetailRow,
   GridToolbar,
 } from "@progress/kendo-react-grid";
-import { CSVLink, CSVDownload } from "react-csv";
+import { CSVLink } from "react-csv";
 import { orderBy, filterBy, process } from "@progress/kendo-data-query";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { ExcelExport } from "@progress/kendo-react-excel-export";
@@ -21,30 +20,16 @@ import { EditCell } from "../components/Admin/ListFilter/EditCell";
 import EditForm from "../components/Admin/ListFilter/EditForm";
 import { HEADERS } from "../components/constants/Headers";
 
-class DetailComponent extends GridDetailRow {
-  constructor(props) {
-    super(props);
-    this.state = { personData: [] };
+const GET_STATIONS = gql`
+  query GetStationsByPersonId($personId: Int) {
+    getStationsByPersonId(personId: $personId) {
+      associateId
+      group
+      priority
+      stationName
+    }
   }
-
-  componentDidMount() {
-    const { dataItem } = this.props.dataItem;
-    fetch(
-      `http://192.168.101.249:8094/api/person/${dataItem.personId}/foreman-station`
-    ).then((res) => console.log("response ", res));
-  }
-
-  render() {
-    const dataItem = this.props.dataItem;
-    console.log("data item", dataItem);
-
-    return (
-      <section>
-        <p>Not data</p>
-      </section>
-    );
-  }
-}
+`;
 
 const PageTemplate = (props) => (
   <div>
@@ -66,6 +51,8 @@ const PageTemplate = (props) => (
 const DemoGrid = () => {
   const { loading, error, data } = useQuery(ListPersonDocument);
   const [persons, setPersons] = useState([]);
+  const [getStations, { data: stationData }] = useLazyQuery(GET_STATIONS);
+  const [stations, setStations] = useState([]);
   const [sort, setSort] = useState<any>([{ field: "empId", dir: "desc" }]);
   const [filter, setFilter] = useState<any>(undefined);
   const [skip, setSkip] = useState(0);
@@ -79,29 +66,56 @@ const DemoGrid = () => {
 
   useEffect(() => {
     if (data) {
-      setPersons(data.listPerson);
+      let personData = data.listPerson.map((person) => ({
+        ...person,
+        expanded: false,
+      }));
+      setPersons(personData.slice(0));
     }
-  }, [data]);
+    if (stationData) {
+      setStations(stationData.getStationsByPersonId);
+    }
+  }, [data, stationData]);
+
+  const DetailComponent = (props) => {
+    if (stations) {
+      return (
+        <Grid data={stations}>
+          {/* <Column field="associateId" title="Associate ID" width="120px" /> */}
+          <Column field="group" title="Group" />
+          <Column field="priority" title="Priority" />
+          <Column field="stationName" title="Station Name" />
+        </Grid>
+      );
+    }
+    return (
+      <div style={{ height: "50px", width: "100%" }}>
+        <div style={{ position: "absolute", width: "100%" }}>
+          <div className="k-loading-image" />
+        </div>
+      </div>
+    );
+  };
 
   const pageChange = (event) => {
     setSkip(event.page.skip);
     setTake(event.page.take);
   };
 
-  if (loading) return "Loading...";
-  if (error) return `Error! ${error.message}`;
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{`Error! ${error.message}`}</p>;
 
   const expandChange = (event) => {
-    // const personList = persons.slice(0);
-    // setPersons(
-    //   persons.map(item => {
-    //     if (item.personId == event.dataItem.personId) {
-    //       console.log('expanding', item)
-    //       // item.expanded = !item.expanded;
-    //     }
-    //     return item;
-    //   })
-    // );
+    getStations({ variables: { personId: Number(event.dataItem.personId) } });
+
+    setPersons(
+      persons.map((item) => {
+        if (item.personId == event.dataItem.personId) {
+          item.expanded = !item.expanded;
+        }
+        return item;
+      })
+    );
   };
 
   let _export = React.createRef();
