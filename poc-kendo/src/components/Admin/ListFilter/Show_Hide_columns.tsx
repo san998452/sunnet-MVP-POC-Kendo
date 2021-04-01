@@ -63,15 +63,13 @@ export const CustomColumnMenu = (props:any) =>{
                         onClick={onMenuItemClick}
                     />
                     <GridColumnMenuItemContent show={columnsExpanded}>
-                        {/* <div className={'k-column-list-wrapper'}> */}
-                        <div>
+                        <div className={'k-column-list-wrapper'}>
                             <form onSubmit={onSubmit} onReset={onReset}>
-                                {/* <div className={'k-column-list'}> */}
-                                <div>
+                                <div className={'k-column-list'}>
                                     {columns.map((column, idx) =>
                                         (
-                                            // <div key={idx} className={'k-column-list-item'}>
-                                            <div key={idx}>
+                                            <div key={idx} className={'k-column-list-item'}>
+                                            {/* // <div key={idx}> */}
                                                 <span>
                                                     <input
                                                         id={`column-visiblity-show-${idx}`}

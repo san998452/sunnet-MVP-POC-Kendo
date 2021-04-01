@@ -15,6 +15,9 @@ import { ListPersonDocument } from "../graphql-operations";
 import { ColumnMenu } from "../components/Admin/ListFilter/columnMenu";
 import { CustomColumnMenu } from "../components/Admin/ListFilter/Show_Hide_columns";
 import column from "../components/Admin/ListFilter/column";
+
+import { EditCell } from "../components/Admin/ListFilter/EditCell";
+import EditForm from "../components/Admin/ListFilter/EditForm";
 import { HEADERS } from "../components/constants/Headers";
 
 const GET_STATIONS = gql`
@@ -57,6 +60,9 @@ const DemoGrid = () => {
   const [columns, setColumns] = useState<any>(column);
   const [search, setSearch] = useState("");
   const [isExporting, setExporting] = useState(false);
+  const [editID, setEditID] = useState(null);
+  const [editItem, setEditItem] = useState({});
+  const [openForm, setOpenForm] = useState(false);
 
   useEffect(() => {
     if (data) {
@@ -103,7 +109,7 @@ const DemoGrid = () => {
     setTake(event.page.take);
   };
 
-  if (loading) return <p>Loading...</p>
+  if (loading) return <p>Loading...</p>;
   if (error) return <p>{`Error! ${error.message}`}</p>;
 
   const expandChange = (event) => {
@@ -162,7 +168,55 @@ const DemoGrid = () => {
       <Column field="pagerNational" title="Pager National" /> */}
     </Grid>
   );
+  const itemChange = (e) => {
+    debugger;
+    e.dataItem[e.field] = e.value;
+    setPersons([...persons]);
+    console.log("change person ...", persons);
+  };
 
+  const handleSubmit = (event) => {
+    // this.setState({
+    //     data: this.state.data.map(item => {
+    //         if (event.ProductID === item.ProductID) {
+    //             item = { ...event };
+    //         }
+    //         return item;
+    //     }),
+    //     openForm: false
+    // });
+  };
+
+  const handleCancelEdit = () => {
+    setOpenForm(false);
+  };
+
+  const enterEdit = (item) => {
+    setOpenForm(true);
+    setEditItem(item);
+  };
+
+  const EditCommandCell = (props) => {
+    return (
+      <td>
+        <button
+          className="k-button k-primary"
+          onClick={() => props.enterEdit(props.dataItem)}
+        >
+          Edit
+        </button>
+      </td>
+    );
+  };
+  const handleEdit = () => {
+    debugger;
+    setPersons(persons.map((item) => Object.assign({ inEdit: true }, item)));
+    console.log(persons);
+  };
+
+  const MyEditCommandCell = (props) => (
+    <EditCommandCell {...props} enterEdit={enterEdit} />
+  );
   return (
     <AutoSizer className="autoresizer-tbl">
       {({ height, width }) => {
@@ -180,10 +234,12 @@ const DemoGrid = () => {
                   orderBy(
                     persons.filter((item) => {
                       if (search.toLowerCase() !== null) {
-                        return Object.keys(item).some((key) =>
-                          item[key]
-                            ?.toLowerCase()
-                            .includes(search.toLowerCase())
+                        return Object.keys(item).some(
+                          (key) =>
+                            typeof item[key] === "string" &&
+                            item[key]
+                              ?.toLowerCase()
+                              .includes(search.toLowerCase())
                         );
                       } else {
                         return item;
@@ -213,6 +269,8 @@ const DemoGrid = () => {
                 onFilterChange={(e) => {
                   setFilter(e.filter);
                 }}
+                editField="inEdit"
+                onItemChange={itemChange}
               >
                 <GridToolbar>
                   <input
@@ -253,45 +311,13 @@ const DemoGrid = () => {
                   >
                     Export PDF
                   </button>
+                  <button onClick={handleEdit}>Edit</button>
                 </GridToolbar>
-                {/* <Column
-            width="80px"
-            field="empId"
-            title="ID"
-            filterable={false}
-            editable={false}
-            locked
-            minResizableWidth={60}
-          />
-          <Column
-            locked
-            field="firstName"
-            width="200px"
-            title="First Name"
-            filter={"text"}
-            columnMenu={ColumnMenu}
-          />
-          <Column
-            locked
-            field="lastName"
-            title="Last Name"
-            width="200px"
-            columnMenu={ColumnMenu}
-          />
-          <Column field="title" title="Title" width="200px" />
-          <Column field="workPhone" title="Work Phone" width="200px" />
-          <Column field="homePhone" title="Home Phone" width="200px" />
-          <Column field="email" title="Email" width="150px" />
-          <Column
-            field="location"
-            title="Location"
-            width="200px"
-            filter={"numeric"}
-          />
-          <Column field="supervisor" title="Supervisor" width="200px" />
-          <Column field="cellPhone" title="Cell Phone" width="200px" />
-          <Column field="enabledFlag" title="Enabled Flag" width="200px" filter={'boolean'}/>
-          <Column field="pagerNational" title="Pager National" width="200px"/> */}
+                <Column
+                  cell={MyEditCommandCell}
+                  width="80px"
+                  filterable={false}
+                />
                 {columns.map(
                   (column, idx) =>
                     column.show && (
@@ -307,6 +333,13 @@ const DemoGrid = () => {
                     )
                 )}
               </Grid>
+              {openForm && (
+                <EditForm
+                  cancelEdit={handleCancelEdit}
+                  onSubmit={handleSubmit}
+                  item={editItem}
+                />
+              )}
             </ExcelExport>
             <GridPDFExport
               pageTemplate={PageTemplate}
