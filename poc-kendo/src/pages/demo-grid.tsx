@@ -48,7 +48,7 @@ const PageTemplate = (props) => (
 const DemoGrid = () => {
   const { loading, error, data } = useQuery(ListPersonDocument);
   const [persons, setPersons] = useState([]);
-  const [getStations, { data: stationData }] = useLazyQuery(GET_STATIONS);
+  const [getStations, {  loading: stationLoading, data: stationData }] = useLazyQuery(GET_STATIONS);
   const [stations, setStations] = useState([]);
   const [sort, setSort] = useState<any>([{ field: "empId", dir: "desc" }]);
   const [filter, setFilter] = useState<any>(undefined);
@@ -72,23 +72,30 @@ const DemoGrid = () => {
   }, [data, stationData]);
 
   const DetailComponent = (props) => {
-    if (stations) {
-      return (
-        <Grid data={stations}>
-          {/* <Column field="associateId" title="Associate ID" width="120px" /> */}
-          <Column field="group" title="Group" />
-          <Column field="priority" title="Priority" />
-          <Column field="stationName" title="Station Name" />
-        </Grid>
-      );
+    if(stationLoading) {
+      return <p>Loading...</p>
     }
+    // if (stations) {
+    //   return (
+    //     <div style={{ width: "100%" }}>
+    //     {/* <div style={{ position: "absolute", width: "100%" }}> */}
+    //       {/* <div className="k-loading-image" /> */}
+    //       <p>No Association</p>
+    //     {/* </div> */}
+    //     </div>
+    //   );
+    // }
     return (
-      <div style={{ height: "50px", width: "100%" }}>
-        <div style={{ position: "absolute", width: "100%" }}>
-          <div className="k-loading-image" />
-        </div>
-      </div>
-    );
+      stations.length > 0 ? (
+        <Grid data={stations} style={{width: "600px"}} >
+          <Column field="group" title="Group" width="200px" />
+          <Column field="priority" title="Priority" width="200px" />
+          <Column field="stationName" title="Station Name" width="200px" />
+        </Grid>
+      ) : (
+        <p> No Assocations available </p>
+      )
+    )
   };
 
   const pageChange = (event) => {
