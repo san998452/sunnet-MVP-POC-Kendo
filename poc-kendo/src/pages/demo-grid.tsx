@@ -240,7 +240,7 @@ const DemoGrid = () => {
       {({ height, width }) => {
         const pageSize = Math.floor((height - 375) / 48);
         //updating kendo pagesize
-        setTake(pageSize);
+        //setTake(pageSize);
         return (
           <div className="kendo-ui-grid">
             <h3>Personnel List</h3>
