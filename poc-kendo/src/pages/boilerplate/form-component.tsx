@@ -24,9 +24,11 @@ const formcomponent = () =>
         <Form
         onSubmit={handleSubmit}
         render={(formRenderProps) => (
-            <FormElement style={{maxWidth: 650}}>
+            <FormElement>
                 <fieldset className={'k-form-fieldset'}>
                     <legend className={'k-form-legend'}>Add Form Name Here......</legend>
+                    <div className="form-row">
+                    <div className="form-col">
                     <div className="mb-3">
                         <Field name={'firstName'} component={Input} label={'First name'} />
                     </div>
@@ -37,6 +39,34 @@ const formcomponent = () =>
 
                     <div className="mb-3">
                         <Field name={"email"} type={"email"} component={EmailInput} label={"Email"} validator={emailValidator} />
+                    </div>
+                    </div>
+                    <div className="form-col">
+                    <div className="mb-3">
+                        <Field name={'firstName'} component={Input} label={'First name'} />
+                    </div>
+
+                    <div className="mb-3">
+                        <Field name={'lastName'} component={Input} label={'Last name'} />
+                    </div>
+
+                    <div className="mb-3">
+                        <Field name={"email"} type={"email"} component={EmailInput} label={"Email"} validator={emailValidator} />
+                    </div>
+                    </div>
+                    <div className="form-col">
+                    <div className="mb-3">
+                        <Field name={'firstName'} component={Input} label={'First name'} />
+                    </div>
+
+                    <div className="mb-3">
+                        <Field name={'lastName'} component={Input} label={'Last name'} />
+                    </div>
+
+                    <div className="mb-3">
+                        <Field name={"email"} type={"email"} component={EmailInput} label={"Email"} validator={emailValidator} />
+                    </div>
+                    </div>
                     </div>
                 </fieldset>
                 <div className="k-form-buttons">

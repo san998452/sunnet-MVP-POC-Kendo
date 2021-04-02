@@ -2,7 +2,7 @@ const footer = () =>
 {
     return(
         <div className="footerbar">
-         I am footer
+         Footer content 
         </div>
     )
 }
