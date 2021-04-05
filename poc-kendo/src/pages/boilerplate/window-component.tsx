@@ -14,7 +14,7 @@ const windowcomponent = () =>
             title={"Status"} 
             onClose={toggleDialog} 
             initialHeight={350}
-            width={600}
+            width={1000}
             >
                 <Formcomponent />
             </Window>

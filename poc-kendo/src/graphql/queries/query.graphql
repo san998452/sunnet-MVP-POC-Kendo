@@ -43,14 +43,14 @@ query listPerson {
   }
 }
 
-query GetStationsByPersonId($personId: ID!) {
-  getStationsByPersonId(id: $personId) {
-    associateId
-    group
-    priority
-    stationName
-  }
-}
+#query GetStationsByPersonId($personId: ID!) {
+#  getStationsByPersonId(id: $personId) {
+#    associateId
+#    group
+#    priority
+#    stationName
+#  }
+#}
 
 # query PersonList($id: ID!) {
 #   PersonList(id: $id) {

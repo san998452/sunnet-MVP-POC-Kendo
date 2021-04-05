@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { gql, useLazyQuery, useQuery } from "@apollo/client";
+import { gql, useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import {
   Grid,
   GridColumn as Column,
@@ -11,7 +11,10 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import { ExcelExport } from "@progress/kendo-react-excel-export";
 import { GridPDFExport } from "@progress/kendo-react-pdf";
 
-import { ListPersonDocument } from "../graphql-operations";
+import { Notification, NotificationGroup } from '@progress/kendo-react-notification';
+import { Fade } from '@progress/kendo-react-animation';
+
+import { ListPersonDocument,CreatePersonMutationVariables,CreatePersonDocument } from "../graphql-operations";
 import { ColumnMenu } from "../components/Admin/ListFilter/columnMenu";
 import { CustomColumnMenu } from "../components/Admin/ListFilter/Show_Hide_columns";
 import column from "../components/Admin/ListFilter/column";
@@ -21,6 +24,7 @@ import EditForm from "../components/Admin/ListFilter/EditForm";
 import { HEADERS } from "../components/constants/Headers";
 import Link from "next/link";
 
+import { Button } from "@progress/kendo-react-buttons";
 const GET_STATIONS = gql`
   query GetStationsByPersonId($personId: Int) {
     getStationsByPersonId(personId: $personId) {
@@ -55,6 +59,7 @@ const DemoGrid = () => {
   const [getStations, {  loading: stationLoading, data: stationData }] = useLazyQuery(GET_STATIONS);
   const [stations, setStations] = useState([]);
   const [sort, setSort] = useState<any>([{ field: "empId", dir: "desc" }]);
+
   const [filter, setFilter] = useState<any>(undefined);
   const [skip, setSkip] = useState(0);
   const [take, setTake] = useState(10);
@@ -64,7 +69,14 @@ const DemoGrid = () => {
   const [editID, setEditID] = useState(null);
   const [editItem, setEditItem] = useState({});
   const [openForm, setOpenForm] = useState(false);
-
+  const [openAddPerson,setOpenAddPerson]=useState(false);
+  const [createPerson] = useMutation<{
+    createPerson: CreatePersonMutationVariables;
+  }>(CreatePersonDocument, {
+    refetchQueries: (mutationResults) => [{ query: ListPersonDocument }],
+    onCompleted() {
+    },
+  });
   useEffect(() => {
     if (data) {
       let personData = data.listPerson.map((person) => ({
@@ -170,7 +182,6 @@ const DemoGrid = () => {
     </Grid>
   );
   const itemChange = (e) => {
-    debugger;
     e.dataItem[e.field] = e.value;
     setPersons([...persons]);
     console.log("change person ...", persons);
@@ -190,6 +201,7 @@ const DemoGrid = () => {
 
   const handleCancelEdit = () => {
     setOpenForm(false);
+    setOpenAddPerson(false);
   };
 
   const enterEdit = (item) => {
@@ -197,6 +209,13 @@ const DemoGrid = () => {
     setEditItem(item);
   };
 
+   const handleAddSubmit=(event:any)=>{
+       console.log("event",event)
+       let addPersonData={...event}
+       createPerson({variables:{input:addPersonData}})
+       setOpenAddPerson(false)
+      //  alert("data added successfully.")
+   }
   const EditCommandCell = (props) => {
     return (
       <td>
@@ -223,11 +242,16 @@ const DemoGrid = () => {
       {({ height, width }) => {
         const pageSize = Math.floor((height - 375) / 48);
         //updating kendo pagesize
-        setTake(pageSize);
+        //setTake(pageSize);
         return (
           <div className="kendo-ui-grid">
             <h3>Personnel List</h3>
-
+            <Button primary={true} onClick={()=>setOpenAddPerson(true)}>Create Person</Button>
+            {openAddPerson && <EditForm 
+                  cancelEdit={handleCancelEdit}
+                  onSubmit={handleAddSubmit}
+                  item={undefined}
+                  />}
             <ExcelExport data={persons} ref={_export}>
               <Grid
                 style={{ height: "calc(100% - 62px)" }}

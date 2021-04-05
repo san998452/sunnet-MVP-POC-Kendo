@@ -1,7 +1,7 @@
 schema: "http://192.168.101.174:4000/"
 documents: 
   - "./src/graphql/queries/query.graphql"
-  # - "./src/graphql/mutations/mutation.graphql"
+  - "./src/graphql/mutations/mutation.graphql"
 watch: true  
 generates:
   ./src/graphql-operations.ts:
