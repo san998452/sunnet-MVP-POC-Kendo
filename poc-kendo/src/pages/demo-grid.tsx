@@ -19,6 +19,7 @@ import column from "../components/Admin/ListFilter/column";
 import { EditCell } from "../components/Admin/ListFilter/EditCell";
 import EditForm from "../components/Admin/ListFilter/EditForm";
 import { HEADERS } from "../components/constants/Headers";
+import Link from "next/link";
 
 const GET_STATIONS = gql`
   query GetStationsByPersonId($personId: Int) {
@@ -310,6 +311,16 @@ const DemoGrid = () => {
                     // disabled={isExporting}
                   >
                     Export PDF
+                  </button>
+                  <button
+                    title="Export PDF"
+                    className="k-button k-primary"
+                    // onClick={exportPDF}
+                    // disabled={isExporting}
+                  >
+                    <Link href="/react-gantt-chart">
+                      Gantt Chart
+                    </Link>
                   </button>
                   <button onClick={handleEdit}>Edit</button>
                 </GridToolbar>
