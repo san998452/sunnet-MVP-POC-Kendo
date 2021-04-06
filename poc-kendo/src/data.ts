@@ -1,7 +1,3 @@
-interface Scales {
-    unit: string, step: number, format: string
-}
-
 const scales = [
     { unit: "month", step: 1, format: "MMMM yyy" },
     { unit: "day", step: 1, format: "d" }
