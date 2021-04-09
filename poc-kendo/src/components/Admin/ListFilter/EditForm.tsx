@@ -37,15 +37,17 @@ const EditForm = (props) => {
     <Window
       title={"Add/Edit Person"}
       onClose={props.cancelEdit}
-      initialHeight={350}
-      width={600}
+      initialHeight={450}
+      width={1000}
     >
       <Form
         onSubmit={props.onSubmit}
         initialValues={item}
         render={(formRenderProps) => (
-          <FormElement style={{ maxWidth: 650 }}>
+          <FormElement>
             <fieldset className={"k-form-fieldset"}>
+            <div className="form-row">
+                    <div className="form-col">
               <div className="mb-3">
                 <Field
                   name={"firstName"}
@@ -69,6 +71,8 @@ const EditForm = (props) => {
                   validator={emailValidator}
                 />
               </div>
+              </div>
+              <div className="form-col">
               <div className="mb-3">
                 <Field
                   name={"homePhone"}
@@ -93,6 +97,8 @@ const EditForm = (props) => {
                   label={"Cell Phone"}
                 />
               </div>
+              </div>
+              <div className="form-col">
               <div className="mb-3">
                 <Field
                   name={"faxPhone"}
@@ -105,6 +111,8 @@ const EditForm = (props) => {
               </div>
               <div className="mb-3">
                 <Field name={"ext"} component={Input} label={"Ext"} />
+              </div>
+              </div>
               </div>
             </fieldset>
             <div className="k-form-buttons">
