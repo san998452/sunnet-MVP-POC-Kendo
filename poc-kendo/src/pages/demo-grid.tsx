@@ -342,7 +342,7 @@ const DemoGrid = () => {
                     // onClick={exportPDF}
                     // disabled={isExporting}
                   >
-                    <Link href="/react-gantt-chart">
+                    <Link href="/gantt-chart">
                       Gantt Chart
                     </Link>
                   </button>

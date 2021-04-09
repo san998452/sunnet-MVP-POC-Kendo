@@ -1,7 +1,19 @@
+// const scales = [
+//     { unit: "month", step: 1, format: "MMMM yyy" },
+//     { unit: "day", step: 1, format: "dd" }
+// ];
+
+const dayStyle = (a) => {
+    const day = a.getDay() === 5 || a.getDay() === 6;
+    return day ? "sday" : "";
+};
+
 const scales = [
-    { unit: "month", step: 1, format: "MMMM yyy" },
-    { unit: "day", step: 1, format: "d" }
-];
+    { unit: "year", step: 1, format: "yyyy" },
+  { unit: "month", step: 2, format: "MMMM yyy" },
+//   { unit: "week", step: 1, format: "w" },
+  { unit: "day", step: 1, format: "d MMM" },
+]
 
 const columns = [
     { name: "text", label: "Task name", width: "100%" },
@@ -65,7 +77,8 @@ const tasks = [
 const links = [
     { source: 2, target: 3, type: 0 },
     { source: 1, target: 4, type: 1 },
-    { source: 5, target: 6, type: 2 }
+    { source: 5, target: 6, type: 2 },
+    { source: 6, target: 2, type: 3 }
 ];
 
 export { scales, columns, tasks, links };
