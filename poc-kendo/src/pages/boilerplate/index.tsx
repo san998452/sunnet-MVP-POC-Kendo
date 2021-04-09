@@ -1,6 +1,7 @@
 import Formcomponent from './form-component';
 import Windowcomponent from './window-component';
 import Buttoncomponent from './button-component';
+import Drawercomponent from './drawer-component';
 const boilerplate = () =>
 {
     return(
@@ -13,6 +14,9 @@ const boilerplate = () =>
 
         <h3 className="m-50">Button Component</h3>
         <Buttoncomponent />
+
+        <h3 className="m-50">Drawer Component</h3>
+        <Drawercomponent />
 
         </section>
     );
